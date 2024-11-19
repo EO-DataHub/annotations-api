@@ -20,16 +20,14 @@ annotations_bucket = os.environ.get("ANNOTATIONS_BUCKET", "")
 def key_to_json(key: str, request: Request) -> json:
 
     base_url = str(request.base_url)
-    base_url = base_url if not base_url.endswith('/') else base_url[:-1]
+    base_url = base_url if not base_url.endswith("/") else base_url[:-1]
 
     url = f"{base_url}{root_path}{key}"
 
     return {"file": key.split("/")[-1], "href": url}
 
 
-def bucket_contents_to_json(
-    contents: dict, path: str, request: Request
-) -> json:
+def bucket_contents_to_json(contents: dict, path: str, request: Request) -> json:
     links = {"path": path, "links": []}
     for entry in contents.get("Contents"):
 
