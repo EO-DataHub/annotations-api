@@ -1,11 +1,10 @@
 import json
 import logging
 import os
-from typing import Annotated
 
 import boto3
 from botocore.exceptions import ClientError
-from fastapi import FastAPI, Header, Request
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import Response
 
 logger = logging.getLogger(__name__)
@@ -42,25 +41,19 @@ def bucket_contents_to_json(contents: dict, path: str, request: Request) -> json
 @app.get("/catalogue/{path}/annotations")
 async def get_all_annotations(path: str, request: Request):
     s3 = boto3.client("s3")
-    print("AAAAAAAAAAAAAAAAAA")
-    print(annotations_bucket)
-    print(path)
     result = s3.list_objects(Bucket=annotations_bucket, Prefix=f"catalogue/{path}/annotations")
-    print("bbbbbbbbbbbbbb")
-    print(result)
-
-    print(bucket_contents_to_json(result, path, request))
     return bucket_contents_to_json(result, path, request)
 
 
 @app.get("/catalogue/{path}/annotations/{uuid}", response_class=Response)
-async def get_specific_annotation(
-    path: str, uuid: str, format: Annotated[str | None, Header()] = None
-):
-    s3 = boto3.client("s3")
-    # result = s3.list_objects(Bucket=annotations_bucket, Prefix=f'catalogue/{path}/{file_name}')
+async def get_specific_annotation(path: str, uuid: str, request: Request):
+    file_type = (
+        request.headers.get("accept") if not request.headers.get("accept") == "*/*" else None
+    )
 
-    file_name = f"{uuid}.{format}" if format else uuid
+    s3 = boto3.client("s3")
+
+    file_name = f"{uuid}.{file_type}" if file_type else uuid
 
     key = f"catalogue/{path}/annotations/{file_name}"
 
@@ -68,8 +61,16 @@ async def get_specific_annotation(
         data = s3.get_object(Bucket=annotations_bucket, Key=key)
 
     except ClientError:
-        logging.warning(f"Key {key} not found")
-        return f"Key {key} not found. Have you included a format in the header?"
+        try:
+            data = s3.get_object(Bucket=annotations_bucket, Key=f"{key}.ttl")
+
+        except ClientError:
+            logging.warning(f"Key {key} not found")
+            raise HTTPException(
+                status_code=415,
+                detail=f"Key {key} not found. Have you included a valid file type in the header? "
+                f"e.g. `Accept: ttl`",
+            ) from None
 
     return Response(
         content=data["Body"].read(),
