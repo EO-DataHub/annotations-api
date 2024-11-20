@@ -46,7 +46,10 @@ def get_all_annotations(path: str, request: Request):
     print(annotations_bucket)
     print(path)
     result = s3.list_objects(Bucket=annotations_bucket, Prefix=f"catalogue/{path}/annotations")
+    print("bbbbbbbbbbbbbb")
+    print(result)
 
+    print(bucket_contents_to_json(result, path, request))
     return bucket_contents_to_json(result, path, request)
 
 
