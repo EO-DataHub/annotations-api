@@ -71,4 +71,8 @@ async def get_specific_annotation(
         logging.warning(f"Key {key} not found")
         return f"Key {key} not found. Have you included a format in the header?"
 
-    return data["Body"].read()
+    return Response(
+        content=data["Body"].read(),
+        media_type="text/plain",
+        headers={"Content-Disposition": f"attachment;filename={file_name}"},
+    )
