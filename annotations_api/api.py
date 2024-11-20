@@ -21,7 +21,7 @@ def key_to_json(key: str, request: Request) -> json:
     base_url = str(request.base_url)
     base_url = base_url if not base_url.endswith("/") else base_url[:-1]
 
-    url = f"{base_url}{root_path}{key}"
+    url = f"{base_url}{key}"
 
     return {"file": key.split("/")[-1], "href": url}
 
