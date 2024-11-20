@@ -48,7 +48,7 @@ async def get_all_annotations(path: str, request: Request):
 @app.get("/catalogue/{path}/annotations/{uuid}", response_class=Response)
 async def get_specific_annotation(path: str, uuid: str, request: Request):
     file_type = (
-        request.headers.get("accept") if not request.headers.get("accept") == "*/*" else None
+        request.headers.get("accept") if "*/*" not in request.headers.get("accept") else None
     )
 
     s3 = boto3.client("s3")
