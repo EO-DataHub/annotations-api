@@ -42,6 +42,9 @@ def bucket_contents_to_json(contents: dict, path: str, request: Request) -> json
 @app.get("/catalogue/{path}/annotations")
 def get_all_annotations(path: str, request: Request):
     s3 = boto3.client("s3")
+    print("AAAAAAAAAAAAAAAAAA")
+    print(annotations_bucket)
+    print(path)
     result = s3.list_objects(Bucket=annotations_bucket, Prefix=f"catalogue/{path}/annotations")
 
     return bucket_contents_to_json(result, path, request)
