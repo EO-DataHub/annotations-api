@@ -18,8 +18,7 @@ annotations_bucket = os.environ.get("ANNOTATIONS_BUCKET", "")
 
 def key_to_json(key: str, request: Request) -> json:
 
-    base_url = str(request.base_url)
-    base_url = base_url if not base_url.endswith("/") else base_url[:-1]
+    base_url = str(request.base_url).rstrip("/")
 
     url = f"{base_url}/{key}"
 
