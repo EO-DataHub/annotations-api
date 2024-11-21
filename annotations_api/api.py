@@ -17,6 +17,7 @@ annotations_bucket = os.environ.get("ANNOTATIONS_BUCKET", "")
 
 
 def key_to_json(key: str, request: Request) -> json:
+    """Converts AWS keys to a dictionary with the file name and its URL"""
 
     base_url = str(request.base_url).rstrip("/")
 
@@ -26,6 +27,8 @@ def key_to_json(key: str, request: Request) -> json:
 
 
 def bucket_contents_to_json(contents: dict, path: str, request: Request) -> json:
+    """Returns the contents of the bucket in JSON format with links provided for access to the
+    individual files"""
     links = {"path": path, "links": []}
     for entry in contents.get("Contents"):
 
@@ -39,6 +42,7 @@ def bucket_contents_to_json(contents: dict, path: str, request: Request) -> json
 
 @app.get("/catalogue/{path}/annotations")
 async def get_all_annotations(path: str, request: Request):
+    """Collects all available annotations at a given path"""
     s3 = boto3.client("s3")
     result = s3.list_objects(Bucket=annotations_bucket, Prefix=f"catalogue/{path}/annotations")
     return bucket_contents_to_json(result, path, request)
@@ -46,6 +50,7 @@ async def get_all_annotations(path: str, request: Request):
 
 @app.get("/catalogue/{path}/annotations/{uuid}", response_class=Response)
 async def get_specific_annotation(path: str, uuid: str, request: Request):
+    """Returns annotation at a given path"""
     file_type = (
         request.headers.get("accept") if "*/*" not in request.headers.get("accept") else None
     )
