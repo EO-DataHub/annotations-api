@@ -104,3 +104,8 @@ manually in the following way:
 * Run `make dockerbuild` (for images tagged `latest`) or `make dockerbuild VERSION=1.2.3` for a release tagged `1.2.3`.
   The image will be available locally within Docker after this step.
 * Run `make dockerpush` or `make dockerpush VERSION=1.2.3`. This will send the image to the ECR repository.
+
+
+## Running locally
+
+For development the API can be run with `fastapi dev annotations_api/api.py` and accessed via `localhost:8000`
