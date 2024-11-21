@@ -50,7 +50,9 @@ async def get_all_annotations(path: str, request: Request):
 
 @app.get("/catalogue/{path}/annotations/{uuid}", response_class=Response)
 async def get_specific_annotation(path: str, uuid: str, request: Request):
-    """Returns annotation at a given path"""
+    """Returns annotation at a given path. Attempts to retrieve the file directly given by the URL if it
+    exists. If it doesn't, it checks the header for a file type. If no file type exists, assume .ttl and
+    try to retrieve file of given file type"""
     file_type = (
         request.headers.get("accept") if "*/*" not in request.headers.get("accept") else None
     )
