@@ -69,6 +69,7 @@ async def get_specific_annotation(path: str, uuid: str, request: Request):
     except ClientError:
         try:
             data = s3.get_object(Bucket=annotations_bucket, Key=f"{key}.ttl")
+            file_name = f"{file_name}.ttl"
 
         except ClientError:
             logging.warning(f"Key {key} not found")
