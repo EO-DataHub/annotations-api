@@ -19,7 +19,7 @@ botocore==1.38.45
     #   annotations-api (pyproject.toml)
     #   boto3
     #   s3transfer
-certifi==2025.6.15
+certifi==2026.10.23
     # via pulsar-client
 click==8.2.1
     # via uvicorn
